@@ -1,0 +1,2 @@
+# Vercel Serverless Function Dependencies
+# Lightweight requirements for instant fast builds
