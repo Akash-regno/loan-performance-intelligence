@@ -1,0 +1,4 @@
+scenario,portfolio_el_usd,portfolio_el_rate_pct,delinquency_rate_3m_pct,delinquency_rate_6m_pct,default_rate_12m_pct,prepayment_rate_12m_pct
+base,52075790.5,1.19,15.836,10.541,3.06,9.388
+adverse,57470326.38,1.313,42.51,10.537,3.326,32.826
+high_prepayment,41879357.66,0.957,11.723,10.537,2.598,1.437

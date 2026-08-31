@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Secrets
+.env
+
+# Cache & Temporary
+.pytest_cache/
+.chromadb_cache/
+*.log
+.ipynb_checkpoints/
+.tempmediaStorage/
+
+# Large Raw Data (keep data structure)
+data/raw/*.csv
+data/processed/*.parquet
+data/external/*.csv
+!data/raw/data_dictionary.md
+!data/raw/validation_rules.json
+!data/raw/submission_template.csv

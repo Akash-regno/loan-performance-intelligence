@@ -1,0 +1,62 @@
+[
+  {
+    "rule_id": "VR01_BALANCE_LEQ_ORIGINAL",
+    "description": "current_balance cannot exceed original_balance without modification_flag=1",
+    "column": "current_balance",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR02_POSITIVE_BALANCES",
+    "description": "original_balance must be > 0 and current_balance must be >= 0",
+    "column": "current_balance",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR03_NON_NEGATIVE_AGE",
+    "description": "loan_age_months must be >= 0",
+    "column": "loan_age_months",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR04_REMAINING_TERM",
+    "description": "remaining_term_months must be >= 0 and <= 360",
+    "column": "remaining_term_months",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR05_STATUS_DPD_CONSISTENCY",
+    "description": "If current_status is Current, days_past_due must be 0; if 30DPD, DPD in [30,59]",
+    "column": "current_status",
+    "severity": "HIGH"
+  },
+  {
+    "rule_id": "VR06_NON_NEGATIVE_DPD",
+    "description": "days_past_due must be >= 0",
+    "column": "days_past_due",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR07_DEFAULT_HIGH_DPD",
+    "description": "If default_flag=1 or status=Default, days_past_due should typically be >= 90",
+    "column": "default_flag",
+    "severity": "MEDIUM"
+  },
+  {
+    "rule_id": "VR08_PREPAID_ZERO_BALANCE",
+    "description": "If prepayment_flag=1 or status=Prepaid, current_balance must equal 0",
+    "column": "prepayment_flag",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR09_PREPAID_XOR_DEFAULT",
+    "description": "A loan cannot be simultaneously marked Prepaid and Default in the same cycle",
+    "column": "prepayment_flag",
+    "severity": "CRITICAL"
+  },
+  {
+    "rule_id": "VR10_INTEREST_RATE_RANGE",
+    "description": "interest_rate must be between 1.0 and 20.0 percent",
+    "column": "interest_rate",
+    "severity": "HIGH"
+  }
+]
