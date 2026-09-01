@@ -99,14 +99,34 @@ with st.sidebar:
     mock_mode = (provider_choice == "Mock Mode")
     if provider_choice == "Groq (Ultra-Fast LLaMA 3.3)":
         default_groq = os.environ.get("GROQ_API_KEY", "")
-        groq_key = st.text_input("Groq API Key", type="password", value=default_groq)
+        if not default_groq:
+            try:
+                if "GROQ_API_KEY" in st.secrets:
+                    default_groq = st.secrets["GROQ_API_KEY"]
+            except Exception:
+                pass
+        if not default_groq:
+            try:
+                from src.utils.config import get_config
+                default_groq = get_config().get("llm", {}).get("groq_api_key", "")
+            except Exception:
+                pass
+        groq_key = st.text_input("Groq API Key", type="password", value=default_groq, placeholder="Enter Groq key…")
         if groq_key:
             os.environ["GROQ_API_KEY"] = groq_key
 
     elif provider_choice == "OpenAI":
-        api_key = st.text_input("OpenAI API Key", type="password", value=os.environ.get("OPENAI_API_KEY", ""))
+        default_openai = os.environ.get("OPENAI_API_KEY", "")
+        if not default_openai:
+            try:
+                if "OPENAI_API_KEY" in st.secrets:
+                    default_openai = st.secrets["OPENAI_API_KEY"]
+            except Exception:
+                pass
+        api_key = st.text_input("OpenAI API Key", type="password", value=default_openai, placeholder="Enter OpenAI key…")
         if api_key:
             os.environ["OPENAI_API_KEY"] = api_key
+
 
 # ── Main panel ────────────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["💬 Generate Explanation", "📋 Audit Log", "📊 HITL Decisions"])
