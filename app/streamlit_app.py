@@ -16,6 +16,14 @@ Pages:
   07_llm_copilot.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path for Streamlit Cloud
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import streamlit as st
 
 st.set_page_config(
@@ -24,6 +32,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
 
 # ── Global CSS ──────────────────────────────────────────────────────────────
 st.markdown("""
