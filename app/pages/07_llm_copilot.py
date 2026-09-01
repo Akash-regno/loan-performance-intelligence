@@ -176,6 +176,9 @@ with tab1:
     with col_right:
         st.markdown("#### 🤖 Copilot Response")
 
+        if "copilot_result" not in st.session_state:
+            st.session_state["copilot_result"] = None
+
         if generate_btn:
             top_drivers = (
                 str(loan_row.get("top_drivers", "days_past_due|ltv_band|credit_score_band"))
@@ -231,8 +234,18 @@ with tab1:
                         citations = []
                         retrieved_chunks = []
 
+                st.session_state["copilot_result"] = {
+                    "response_text": response_text,
+                    "grounding_passed": grounding_passed,
+                    "citations": citations,
+                    "retrieved_chunks": retrieved_chunks,
+                    "loan_id": str(selected_loan_id),
+                }
+
+        curr_res = st.session_state.get("copilot_result")
+        if curr_res is not None:
             # ── Display grounding status ──────────────────────────────
-            if grounding_passed:
+            if curr_res["grounding_passed"]:
                 st.markdown(
                     '<span class="grounded-badge">✓ Grounded Response</span>',
                     unsafe_allow_html=True,
@@ -246,16 +259,16 @@ with tab1:
             st.markdown("<br>", unsafe_allow_html=True)
 
             # ── Response box ──────────────────────────────────────────
-            box_class = "llm-box" if grounding_passed else "blocked-box"
+            box_class = "llm-box" if curr_res["grounding_passed"] else "blocked-box"
             st.markdown(
-                f'<div class="{box_class}">{response_text}</div>',
+                f'<div class="{box_class}">{curr_res["response_text"]}</div>',
                 unsafe_allow_html=True,
             )
 
             # ── Retrieved context ──────────────────────────────────────
-            if retrieved_chunks:
+            if curr_res["retrieved_chunks"]:
                 with st.expander("📚 Retrieved Context Chunks", expanded=False):
-                    for chunk in retrieved_chunks:
+                    for chunk in curr_res["retrieved_chunks"]:
                         st.markdown(
                             f"**{chunk.get('chunk_id', '')}** — *{chunk.get('source', '')}*"
                         )
@@ -268,17 +281,17 @@ with tab1:
 
             col_a, col_b, col_c = st.columns(3)
             with col_a:
-                if st.button("✅ Approve", use_container_width=True):
-                    _save_hitl_decision(selected_loan_id, "approved", "")
+                if st.button("✅ Approve", key="btn_app", use_container_width=True):
+                    _save_hitl_decision(curr_res["loan_id"], "approved", "")
                     st.success("Decision logged: **Approved**")
             with col_b:
-                if st.button("❌ Reject", use_container_width=True):
-                    _save_hitl_decision(selected_loan_id, "rejected", "")
+                if st.button("❌ Reject", key="btn_rej", use_container_width=True):
+                    _save_hitl_decision(curr_res["loan_id"], "rejected", "")
                     st.error("Decision logged: **Rejected**")
             with col_c:
                 correction_text = st.text_area("Correction note", height=60, placeholder="Enter correction…")
-                if st.button("✍️ Correct & Save", use_container_width=True):
-                    _save_hitl_decision(selected_loan_id, "corrected", correction_text)
+                if st.button("✍️ Correct & Save", key="btn_corr", use_container_width=True):
+                    _save_hitl_decision(curr_res["loan_id"], "corrected", correction_text)
                     st.warning("Decision logged: **Corrected**")
         else:
             st.info("👈 Select a loan and click **Generate Explanation** to begin.")
@@ -317,17 +330,20 @@ with tab3:
     hitl_path = Path("outputs/hitl_decisions.csv")
 
     if hitl_path.exists():
-        hitl_df = pd.read_csv(hitl_path)
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Total Reviewed", len(hitl_df))
-        with col2:
-            approved = (hitl_df["action"] == "approved").sum() if "action" in hitl_df.columns else 0
-            st.metric("Approved", approved)
-        with col3:
-            rejected = (hitl_df["action"] == "rejected").sum() if "action" in hitl_df.columns else 0
-            st.metric("Rejected / Corrected", rejected)
-        st.dataframe(hitl_df, use_container_width=True)
+        try:
+            hitl_df = pd.read_csv(hitl_path)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Reviewed", len(hitl_df))
+            with col2:
+                approved = (hitl_df["action"] == "approved").sum() if "action" in hitl_df.columns else 0
+                st.metric("Approved", approved)
+            with col3:
+                rejected = (hitl_df["action"] == "rejected").sum() if "action" in hitl_df.columns else 0
+                st.metric("Rejected / Corrected", rejected)
+            st.dataframe(hitl_df, use_container_width=True)
+        except Exception:
+            st.info("No HITL decisions recorded yet.")
     else:
         st.info("No HITL decisions recorded yet.")
 
@@ -337,18 +353,21 @@ def _save_hitl_decision(loan_id: str, action: str, correction: str) -> None:
     """Append a HITL decision to the CSV."""
     import datetime
 
-    hitl_path = Path("outputs/hitl_decisions.csv")
-    hitl_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        hitl_path = Path("outputs/hitl_decisions.csv")
+        hitl_path.parent.mkdir(parents=True, exist_ok=True)
 
-    row = pd.DataFrame([{
-        "timestamp": datetime.datetime.now().isoformat(),
-        "loan_id": loan_id,
-        "action": action,
-        "correction": correction,
-    }])
+        row = pd.DataFrame([{
+            "timestamp": datetime.datetime.now().isoformat(),
+            "loan_id": loan_id,
+            "action": action,
+            "correction": correction,
+        }])
 
-    if hitl_path.exists():
-        existing = pd.read_csv(hitl_path)
-        pd.concat([existing, row], ignore_index=True).to_csv(hitl_path, index=False)
-    else:
-        row.to_csv(hitl_path, index=False)
+        if hitl_path.exists():
+            row.to_csv(hitl_path, mode="a", header=False, index=False)
+        else:
+            row.to_csv(hitl_path, index=False)
+    except Exception:
+        pass
+
