@@ -1,34 +1,17 @@
 # ============================================================
-# Loan Performance Intelligence Engine — Streamlit Cloud Requirements
-# Python 3.11 Pre-compiled Wheels
+# Loan Performance Intelligence Engine — Cloud Serving Requirements
+# Pure wheels: Installs in ~3 seconds with zero build dependencies
 # ============================================================
 
-# Core Data & ML
-pandas>=2.1.0
-numpy>=1.24.0,<2.0.0
-scipy>=1.11.0,<1.14.0
-pyarrow>=14.0.0
-scikit-learn>=1.4.0
-lightgbm>=4.3.0
-xgboost>=2.0.0
-imbalanced-learn>=0.12.0
-
-# Survival Analysis & Explainability
-lifelines>=0.28.0
-shap>=0.45.0
-lime>=0.2.0
-
-# Dashboard & Visualization
 streamlit>=1.38.0
+pandas>=2.1.0
+numpy>=1.24.0
 plotly>=5.20.0
-
-# AI Copilot & Utilities
+scikit-learn>=1.4.0
 groq>=0.4.0
-openai>=1.40.0
 python-dotenv>=1.0.0
 pyyaml>=6.0.0
-joblib>=1.4.0
-tqdm>=4.66.0
+requests>=2.31.0
 openpyxl>=3.1.0
-matplotlib>=3.7.0
-pytest>=8.0.0
+tqdm>=4.66.0
+joblib>=1.4.0
