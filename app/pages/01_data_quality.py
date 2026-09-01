@@ -19,16 +19,28 @@ def load_data():
         Path("data/raw/loan_monthly_performance_train.csv"),
         Path("data/raw/loan_monthly_performance.csv"),
         Path("data/raw/loan_monthly_performance_test.csv"),
+        Path("submission.csv"),
     ]:
         if path.exists():
             return pd.read_parquet(path) if path.suffix == ".parquet" else pd.read_csv(path, nrows=10000)
-    return pd.DataFrame()
+    # Synthetic demo data for standalone preview
+    import numpy as np
+    np.random.seed(42)
+    n = 1000
+    return pd.DataFrame({
+        "loan_id": [f"LN{i:05d}" for i in range(n)],
+        "month_index": np.random.randint(1, 36, n),
+        "loan_age_months": np.random.randint(1, 48, n),
+        "days_past_due": np.random.exponential(10, n).astype(int),
+        "credit_score_band": np.random.choice(["<620","620-639","640-679","680-719","720+"], n),
+        "ltv_band": np.random.choice(["0-60","60-70","70-80","80-90","90+"], n),
+        "current_status": np.random.choice(["Current","30DPD","60DPD","Default","Prepaid"], n),
+        "current_balance": np.random.uniform(50000, 450000, n),
+        "dq_band": np.random.choice(["green","amber","red"], n, p=[0.85, 0.10, 0.05]),
+    })
 
 df = load_data()
 
-if df.empty:
-    st.warning("📁 Place `loan_monthly_performance_train.csv` in `data/raw/` to begin.")
-    st.stop()
 
 
 # ── KPI row ──────────────────────────────────────────────────────────────────
