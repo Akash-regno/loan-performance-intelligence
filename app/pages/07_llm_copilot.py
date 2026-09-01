@@ -55,36 +55,43 @@ st.caption(
 @st.cache_data(show_spinner=False)
 def load_predictions():
     """Load pre-scored predictions or raw loan performance if available."""
-    for path in [
-        Path("submission.csv"),
-        Path("outputs/predictions/test_predictions.parquet"),
-        Path("data/raw/loan_monthly_performance_train.csv"),
-        Path("data/raw/loan_monthly_performance_test.csv"),
-    ]:
-        if path.exists():
-            return pd.read_csv(path, nrows=1000) if path.suffix == ".csv" else pd.read_parquet(path)
+    try:
+        for path in [
+            Path("submission.csv"),
+            Path("outputs/predictions/test_predictions.parquet"),
+            Path("data/raw/loan_monthly_performance_train.csv"),
+            Path("data/raw/loan_monthly_performance_test.csv"),
+        ]:
+            if path.exists():
+                return pd.read_csv(path, nrows=1000) if path.suffix == ".csv" else pd.read_parquet(path)
+    except Exception:
+        pass
     return pd.DataFrame()
 
 
 @st.cache_data(show_spinner=False)
 def load_audit_log():
     """Load LLM audit log entries."""
-    log_path = Path("outputs/llm_logs/audit.jsonl")
-    if not log_path.exists():
+    try:
+        log_path = Path("outputs/llm_logs/audit.jsonl")
+        if not log_path.exists():
+            return []
+        entries = []
+        with log_path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    try:
+                        entries.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        pass
+        return entries
+    except Exception:
         return []
-    entries = []
-    with log_path.open("r", encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if line:
-                try:
-                    entries.append(json.loads(line))
-                except json.JSONDecodeError:
-                    pass
-    return entries
 
 df = load_predictions()
 audit_entries = load_audit_log()
+
 
 # ── Sidebar controls ──────────────────────────────────────────────────────────
 with st.sidebar:
