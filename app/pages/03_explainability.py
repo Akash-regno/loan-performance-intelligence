@@ -2,14 +2,22 @@
 app/pages/03_explainability.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from pathlib import Path
 
 st.set_page_config(page_title="Explainability | LPIE", page_icon="🔍", layout="wide")
+
 st.markdown("## 🔍 Explainability — SHAP & FP/FN Analysis")
 st.caption("Global feature importance, per-loan waterfall plots, and error analysis.")
 
@@ -94,21 +102,28 @@ with tab2:
 with tab3:
     st.markdown("### False-Positive / False-Negative Analysis")
     fp_fn_path = Path("outputs/shap/fp_fn_report.xlsx")
+    loaded_excel = False
     if fp_fn_path.exists():
-        counts_df = pd.read_excel(fp_fn_path, sheet_name="Counts")
-        st.dataframe(counts_df, use_container_width=True)
+        try:
+            counts_df = pd.read_excel(fp_fn_path, sheet_name="Counts")
+            st.dataframe(counts_df, use_container_width=True)
 
-        col1, col2 = st.columns(2)
-        with col1:
-            fp_df = pd.read_excel(fp_fn_path, sheet_name="FP_Drivers")
-            st.markdown("**Top FP Driver Features**")
-            st.dataframe(fp_df, use_container_width=True)
-        with col2:
-            fn_df = pd.read_excel(fp_fn_path, sheet_name="FN_Drivers")
-            st.markdown("**Top FN Driver Features**")
-            st.dataframe(fn_df, use_container_width=True)
-    else:
+            col1, col2 = st.columns(2)
+            with col1:
+                fp_df = pd.read_excel(fp_fn_path, sheet_name="FP_Drivers")
+                st.markdown("**Top FP Driver Features**")
+                st.dataframe(fp_df, use_container_width=True)
+            with col2:
+                fn_df = pd.read_excel(fp_fn_path, sheet_name="FN_Drivers")
+                st.markdown("**Top FN Driver Features**")
+                st.dataframe(fn_df, use_container_width=True)
+            loaded_excel = True
+        except Exception:
+            loaded_excel = False
+
+    if not loaded_excel:
         # Synthetic demo
+
         st.info("📁 Run training pipeline to generate FP/FN report. Showing demo data:")
         demo = pd.DataFrame({
             "Quadrant": ["TP", "TN", "FP", "FN"],

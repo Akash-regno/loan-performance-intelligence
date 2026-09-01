@@ -2,14 +2,22 @@
 app/pages/06_anomalies.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from pathlib import Path
 
 st.set_page_config(page_title="Anomalies | LPIE", page_icon="🚨", layout="wide")
+
 st.markdown("## 🚨 Anomaly Detection & Exception Management")
 st.caption("Ensemble anomaly scores (IF + LOF + HBOS) and rule-based exception flags.")
 

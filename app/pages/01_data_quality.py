@@ -2,13 +2,21 @@
 app/pages/01_data_quality.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-from pathlib import Path
 
 st.set_page_config(page_title="Data Quality | LPIE", page_icon="📊", layout="wide")
+
 st.markdown("## 📊 Data Quality & Profiling")
 st.caption("Missing values, outliers, DQ scores, and validation rule violations.")
 

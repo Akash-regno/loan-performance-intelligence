@@ -2,6 +2,14 @@
 app/pages/04_survival.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -9,6 +17,7 @@ import plotly.express as px
 import streamlit as st
 
 st.set_page_config(page_title="Survival Analysis | LPIE", page_icon="📈", layout="wide")
+
 st.markdown("## 📈 Survival Analysis")
 st.caption("Kaplan–Meier curves, Cox PH hazard rates, competing risk CIF, and Markov state projections.")
 

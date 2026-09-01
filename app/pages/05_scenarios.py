@@ -2,14 +2,22 @@
 app/pages/05_scenarios.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure repository root is on sys.path
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import streamlit as st
-from pathlib import Path
 
 st.set_page_config(page_title="Scenarios | LPIE", page_icon="🌡️", layout="wide")
+
 st.markdown("## 🌡️ Scenario Simulation")
 st.caption("Base / Adverse / High-Prepayment stress tests with portfolio Expected Loss.")
 
