@@ -89,6 +89,29 @@ def load_audit_log():
     except Exception:
         return []
 
+def _save_hitl_decision(loan_id: str, action: str, correction: str) -> None:
+    """Append a HITL decision to the CSV."""
+    import datetime
+
+    try:
+        hitl_path = Path("outputs/hitl_decisions.csv")
+        hitl_path.parent.mkdir(parents=True, exist_ok=True)
+
+        row = pd.DataFrame([{
+            "timestamp": datetime.datetime.now().isoformat(),
+            "loan_id": loan_id,
+            "action": action,
+            "correction": correction,
+        }])
+
+        if hitl_path.exists():
+            row.to_csv(hitl_path, mode="a", header=False, index=False)
+        else:
+            row.to_csv(hitl_path, index=False)
+    except Exception:
+        pass
+
+
 df = load_predictions()
 audit_entries = load_audit_log()
 
@@ -374,27 +397,4 @@ with tab3:
     else:
         st.info("No HITL decisions recorded yet.")
 
-
-# ── Helper ───────────────────────────────────────────────────────────────────
-def _save_hitl_decision(loan_id: str, action: str, correction: str) -> None:
-    """Append a HITL decision to the CSV."""
-    import datetime
-
-    try:
-        hitl_path = Path("outputs/hitl_decisions.csv")
-        hitl_path.parent.mkdir(parents=True, exist_ok=True)
-
-        row = pd.DataFrame([{
-            "timestamp": datetime.datetime.now().isoformat(),
-            "loan_id": loan_id,
-            "action": action,
-            "correction": correction,
-        }])
-
-        if hitl_path.exists():
-            row.to_csv(hitl_path, mode="a", header=False, index=False)
-        else:
-            row.to_csv(hitl_path, index=False)
-    except Exception:
-        pass
 

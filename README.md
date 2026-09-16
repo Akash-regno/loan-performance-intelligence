@@ -63,7 +63,7 @@ RAW DATA (4 CSV files)
        ▼                                                   ▼
 ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────────┐
 │  ANOMALY ENGINE  │    │  EXPLAINABILITY  │    │  SCENARIO ENGINE     │
-│  IF + LOF + HBOS │    │  SHAP + FP/FN   │    │  Base / Adv / Prepay │
+│  IF + LOF + HBOS │    │  SHAP + FP/FN   │    │  Base / Adv / Prepay  │
 └──────────────────┘    └──────────────────┘    └──────────────────────┘
        │                        │                          │
        └────────────────────────┴──────────────────────────┘
